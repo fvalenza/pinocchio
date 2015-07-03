@@ -41,8 +41,8 @@
 
 namespace se3
 {
-  template<class C> struct traitsSE3 {};
 
+  template<class C> struct traitsSE3 {};
   /* Type returned by the "se3Action" and "se3ActionInverse" functions. */
   namespace internal 
   {

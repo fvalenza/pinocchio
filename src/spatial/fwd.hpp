@@ -27,6 +27,9 @@ namespace se3
   template<typename _Scalar, int _Options=0> class ForceTpl;
   template<typename _Scalar, int _Options=0> class InertiaTpl;
 
+
+  template<class C> struct traitsSpatial {};
+
 } // namespace se3
 
 #endif // ifndef __se3_fwd_hpp__
