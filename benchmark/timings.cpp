@@ -54,7 +54,7 @@ int main(int argc, const char ** argv)
   std::vector<VectorXd> qs     (NBT);
   std::vector<VectorXd> qdots  (NBT);
   std::vector<VectorXd> qddots (NBT);
-  for(int i=0;i<NBT;++i) 
+  for(size_t i=0;i<NBT;++i) 
     {
       qs[i]     = Eigen::VectorXd::Random(model.nq);
       qs[i].segment<4>(3) /= qs[i].segment<4>(3).norm();
@@ -66,42 +66,42 @@ int main(int argc, const char ** argv)
   timer.tic();
   SMOOTH(NBT)
     {
-      rnea(model,data,qs[_smooth],qdots[_smooth],qddots[_smooth]);
+      rnea(model,data,qs[(size_t)_smooth],qdots[(size_t)_smooth],qddots[(size_t)_smooth]);
     }
   std::cout << "RNEA = \t\t"; timer.toc(std::cout,NBT);
 
   timer.tic();
   SMOOTH(NBT)
   {
-    nonLinearEffects(model,data,qs[_smooth],qdots[_smooth]);
+    nonLinearEffects(model,data,qs[(size_t)_smooth],qdots[(size_t)_smooth]);
   }
   std::cout << "NLE = \t\t"; timer.toc(std::cout,NBT);
 
   timer.tic();
   SMOOTH(NBT)
   {
-    rnea(model,data,qs[_smooth],qdots[_smooth],Eigen::VectorXd::Zero(model.nv));
+    rnea(model,data,qs[(size_t)_smooth],qdots[(size_t)_smooth],Eigen::VectorXd::Zero(model.nv));
   }
   std::cout << "NLE via RNEA = \t\t"; timer.toc(std::cout,NBT);
  
   timer.tic();
   SMOOTH(NBT)
     {
-      crba(model,data,qs[_smooth]);
+      crba(model,data,qs[(size_t)_smooth]);
     }
   std::cout << "CRBA = \t\t"; timer.toc(std::cout,NBT);
 
   timer.tic();
   SMOOTH(NBT)
   {
-    computeAllTerms(model,data,qs[_smooth],qdots[_smooth]);
+    computeAllTerms(model,data,qs[(size_t)_smooth],qdots[(size_t)_smooth]);
   }
   std::cout << "computeAllTerms = \t\t"; timer.toc(std::cout,NBT);
   
   double total = 0;
   SMOOTH(NBT)
     {
-      crba(model,data,qs[_smooth]);
+      crba(model,data,qs[(size_t)_smooth]);
       timer.tic();
       cholesky::decompose(model,data);
       total += timer.toc(timer.DEFAULT_UNIT);
@@ -112,28 +112,28 @@ int main(int argc, const char ** argv)
   timer.tic();
   SMOOTH(NBT)
     {
-      computeJacobians(model,data,qs[_smooth]);
+      computeJacobians(model,data,qs[(size_t)_smooth]);
     }
   std::cout << "Jacobian = \t"; timer.toc(std::cout,NBT);
 
   timer.tic();
   SMOOTH(NBT)
     {
-      jacobianCenterOfMass(model,data,qs[_smooth],false);
+      jacobianCenterOfMass(model,data,qs[(size_t)_smooth],false);
     }
   std::cout << "COM+Jcom = \t"; timer.toc(std::cout,NBT);
 
   timer.tic();
   SMOOTH(NBT)
   {
-    geometry(model,data,qs[_smooth]);
+    geometry(model,data,qs[(size_t)_smooth]);
   }
   std::cout << "Geometry = \t"; timer.toc(std::cout,NBT);
 
   timer.tic();
   SMOOTH(NBT)
   {
-    kinematics(model,data,qs[_smooth],qdots[_smooth]);
+    kinematics(model,data,qs[(size_t)_smooth],qdots[(size_t)_smooth]);
   }
   std::cout << "Kinematics = \t"; timer.toc(std::cout,NBT);
 

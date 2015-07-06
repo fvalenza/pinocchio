@@ -124,6 +124,7 @@ namespace se3
     friend Motion operator* (const ConstraintTranslationSubspace & S, const Eigen::MatrixBase<D> & v)
     {
       EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(D,3);
+      P_UNUSED(S);
       return Motion (v, Motion::Vector3::Zero ());
     }
 
@@ -137,6 +138,7 @@ namespace se3
   /* [CRBA] ForceSet operator* (Inertia Y,Constraint S) */
   Eigen::Matrix <double, 6, 3> operator* (const Inertia & Y, const JointTranslation::ConstraintTranslationSubspace & S)
   {
+    P_UNUSED(S);
     Eigen::Matrix <double, 6, 3> M;
     M.block <3,3> (Inertia::ANGULAR, 0) = alphaSkew(Y.mass (), Y.lever ());
     //    M.block <3,3> (Inertia::LINEAR, 0) = Y.mass () * Inertia::Matrix3::Identity ();

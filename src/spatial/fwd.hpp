@@ -30,6 +30,8 @@ namespace se3
 
   template<class C> struct traitsSpatial {};
 
+  #define P_UNUSED(arg) (void)arg
+
 } // namespace se3
 
 #endif // ifndef __se3_fwd_hpp__

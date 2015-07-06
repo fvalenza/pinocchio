@@ -52,7 +52,11 @@ namespace se3
     {
       using namespace Eigen;
       using namespace se3;
-      
+
+      P_UNUSED(jdata);
+      P_UNUSED(model);
+      P_UNUSED(i);
+      P_UNUSED(q);
       // TODO: as limits are static, no need of q, nor computations
       jmodel.jointLimit(data.effortLimit) = jmodel.maxEffortLimit();
       jmodel.jointTangentLimit(data.velocityLimit) = jmodel.maxVelocityLimit();
