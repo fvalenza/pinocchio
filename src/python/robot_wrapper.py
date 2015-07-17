@@ -133,4 +133,11 @@ class RobotWrapper:
                 self.viewer.gui.applyConfiguration(self.viewerFixedNodeNames(i),viewerConf)
         self.viewer.gui.refresh()
 
+    # Display in gepetto-view one joint at position Config (XYZQuat)
+    def display(self,xyzQuat,Joint):
+
+        self.viewer.gui.applyConfiguration(self.viewerNodeNames(index(Joint)),
+                                                   utils.XYZQUATToViewerConfiguration(xyzQuat))
+        self.viewer.gui.refresh()
+
 __all__ = [ 'RobotWrapper' ]

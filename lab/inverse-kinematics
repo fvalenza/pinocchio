@@ -6,7 +6,7 @@ Objective
 In this first series of exercises, we are going to take in hand the library Pinocchio in order to build a model
 of a robot, display this robot in a graphical user interface and control the robot to achieve geometric tasks.
 We will first try to achieve a positioning task for one hand, then we will enforce the static balance of the robot.
-Finally, we will implement a hierarchy of task in order to achieve both task : to reach a desired position for the hand
+Finally, we will implement a hierarchy of tasks in order to achieve both task : to reach a desired position for the hand
 ensuring we are in a statically balanced position.
 
 The software Pinocchio is a C++ library provided with a python wrapping that allows us to control it with a python terminal.
@@ -17,7 +17,7 @@ Tutorial 0. Tips
 Python
 ~~~~~~
 We remind you that you can open a python terminal in your own shell. Simply type :
-bash terminal
+
 ....
 student@student-virtualbox:~$ python
 >>>
@@ -27,8 +27,8 @@ Afterwards you'll just have to type your commands in this newly opened terminal.
 To close the python terminal, just type CTRL-D (CTRL-C first to interrupt any on-going execution).
 
 You can also write you command lines in a file and launch this script without entering the interactive mode
-(ie. without starting a new python terminal). In your shell, just type:
-bash terminal
+(ie. without starting a new python terminal). In your shell:
+
 ....
 student@student-virtualbox:~$ python script.py
 >>>
@@ -66,7 +66,9 @@ cross(rand(3),rand(3))    # Cross product of R^3
 rotate('x',0.4)           # Build a rotation matrix of 0.4rad around X.
 ----
 
-Specific classes are defined to represent objects of SE(3), se(3) and se(3)^*. Rigid displacements, elements of SE(3), are represented by the class SE3.
+Specific classes are defined to represent objects of SE(3), se(3) and se(3)^*.
+
+Rigid displacements, elements of SE(3), are represented by the class SE3.
 
 [source,python]
 ----
@@ -87,7 +89,7 @@ nu = se3.Motion.Random()
 nu.linear = v; nu.angular = w
 ----
 
-Spatial forces, elements of se(3)^* = F^6, are represented by the class Force.
+Spatial forces, elements of se(3)^{*} = F^{6}, are represented by the class Force.
 
 [source,python]
 ----
@@ -110,7 +112,7 @@ contains the working memory used by the model algorithms). Both C\++ objects are
 contained in a unique Python class. Two classes are currently available.
 The first one is called RobotWrapper and is generic. This is the one you should use
 with your own urdf model.
-The second one is called RomeoWrapper and is correlated to the romeo_small.urdf provided with
+The second one is called RomeoWrapper and is correlated to the romeo.urdf provided with
 the package. It implements some shortcuts specifics to our model and specify a half-sitting
 configuration.
 
@@ -125,21 +127,19 @@ the model of the Romeo robot, available in the directory "models" of Pinocchio.
 ----
 from pinocchio.romeo_wrapper import RomeoWrapper
 
-robot = RomeoWrapper('path/to/urdf/romeo_small.urdf')
+robot = RomeoWrapper('path/to/urdf/romeo.urdf')
 ----
-The code of the RomeoWrapper class is in /path/to/pinocchio//src/python/romeo_wrapper.py . Do not hesitate to have a look at it and to take inspiration from the implementation of the class functions.
+The code of the robot wrapper class is in /path/to/pinocchio//src/python/*_wrapper.py . Do not hesitate to have a look at it and to take inspiration from the implementation of the class functions.
 
 Exploring the model
 ~~~~~~~~~~~~~~~~~~~
 
-The robot model is available in robot.model. It contains the names of all the
+Once created, the robot model is available in +robot.model+. It contains the names of all the
 robot joint [names], the kinematic tree [parents] (i.e. the graph of parents, 0
 being the root and having no parents), the position of the current joint in the
 parent coordinate frame [jointPosition], the mass, inertia and
-center-of-gravity position of all the bodies (condensed in a spatial inertia
-6x6 matrix) [inertias] and the gravity of the associated world [gravity]. All
-these functions are documented and are available in the correponding class
-dictionnary.
+center-of-gravity position of all the bodies (condensed as a spatial inertia) [inertias] and the gravity of the associated world [gravity]. All
+these functions are documented and are available in the correponding class dictionnary.
 
 [source,python]
 ----
@@ -147,7 +147,7 @@ for name,function in robot.model.__class__.__dict__.items():
   print " **** ", name, ": ", function.__doc__
 ----
 
-Similarly, the robot data are available in robot.data. All the variables
+Similarly, the robot data are available in +robot.data+. All the variables
 allocated by the classical rigid-body dynamics algorithms are stored in
 robot.data and are available through the python wrapping. Similarly to the
 model object, the function are documented and are available from the class
@@ -161,9 +161,10 @@ recovered from its name, and then used to access its placement:
 [source,python]
 ----
 def index(self,name):
-   return [ idx for idx,name in enumerate(robot.model.names) if name=="RWristPitch" ][0]
+        return [ i for i,n in enumerate(self.model.names) if n == name ][0]
 
 # Get the placement of joint number idx
+idx = robot.index("RWristPitch")
 placement = robot.data.oMi[idx]
 ----
 
@@ -174,16 +175,17 @@ Jacobian (6D, expressed in the body frame) with robot.Jrh.
 
 Finally, some recurring datas (used in Model and Data) have been wrapped to functions in some
 python shortcuts, also available in RomeoWrapper:
-+The size of the robot configuration is given by nq.
-+The dimension of its tangent space (velocity) is nv.
-+The index of a joint in the tree can be accessed from its name by index (see above).
-+The classical algorithms are also binded: com, Jcom, mass, biais, joint gravity, position and velocity of each joint.
-+Shortcuts are also implemented for the placement and the Jacobian (6D, expressed in the body frame) of
+-The size of the robot configuration is given by nq.
+-The dimension of its tangent space (velocity) is nv.
+-The index of a joint in the tree can be accessed from its name by index (see above).
+-The classical algorithms are also binded: com, Jcom, mass, biais, joint gravity, position and velocity of each joint.
+-Shortcuts are also implemented for the placement and the Jacobian (6D, expressed in the body frame) of
 the right wrist(rh), left wrist(lh), right ankle(rf), left ankle (lf).For example, you can access the right wrist
 placement and Jacobian with robot.Mrh(q) and robot.Jrh(q)
 
 [source,python]
 ----
+from pinocchio.utils import *
 q = zero(robot.nq)
 v = rand(robot.nv)
 robot.com(q)            # Compute the robot center of mass.
@@ -193,13 +195,14 @@ robot.position(q,23)    # Compute the placement of joint 23
 Display the robot
 ~~~~~~~~~~~~~~~~~
 
-To display the robot, we need an external program called +Gepetto Viewer+.
+To display the robot, we need an external application called +Gepetto Viewer+.
 If you completed the installation in the previous page, you can launch this
 program, open a new terminal in an empty workspace.
 
 ....
 student@student-virtualbox:~$ gepetto-viewer-server
 ....
+Depending on where you installed the software, you may need to go to the binary location or create a shortcut to match this line.
 This will start a server waiting for instructions. We will now create a client that will ask
 the server to perform some requests (such as creating a window or displaying our robot)
 In a python terminal you can test the following :
@@ -219,14 +222,14 @@ In order to display the robot, we need to load its visual geometry. This can be 
 ----
 from gepetto.corbaserver import Client
 client=Client()
-client.gui.createWindow("w")
+wId = client.gui.createWindow("w")
 client.gui.createSceneWithFloor("world")
-client.gui.addSceneToWindow("world","w")
-client.gui.addURDF("world/romeo","/path/to/urdf//romeo_small.urdf","/path/to/meshes/dir/")
+client.gui.addSceneToWindow("world",wId)
+client.gui.addURDF("world/romeo","/path/to/urdf//romeo.urdf","/path/to/meshes/dir/")
 ----
-
+The meshes directory MUST finish by +/+
 Be careful : Using the +addURDF+ method, you load the robot in memory and parse the urdf file.
-The representation in the viewver is such that it need to have a root node that need to be added to the world.
+The representation in the viewver is such that it needs to have a root node that need to be added to the world.
 That's why we set the root node as world/romeo in the above example. Moreover the kinematic chain in gepetto
 viewer is slightly different from the one in pinocchio. In the viewer, the bodies are stored as nodes
 whereas in Pinocchio we store the joints. You can get the list of the node links in gepetto viewer typing
@@ -255,12 +258,12 @@ Publishing the robot configuration
 Play with SE3, display rigid bodies in the world, compute and update the robot position.
 
 Previously, we have seen how to load the robot model in Pinocchio and in the gepetto-viewer.
-And how to update the placement of a body in the viewer. Now we will see the correspondance
+These operations are completely independents. We have also seen how to move a node of the model stored by the viewer.
+Now we will see the correspondance
 between the model in Pinocchio and the one in the viewer.
 
 The body origin is attached to the parent joint location (plus an offset). So to display the
-body attached to a joint (e.g the left arm attached to the left shoulder), we only need the coordinates
-of the joint.
+body attached to a joint, we only need the coordinates of the joint.
 Hence, to display the Head in the viewer, we compute the position of the joint parent of the head link.
 This joint is 'HeadRoll'
 
@@ -269,36 +272,44 @@ This joint is 'HeadRoll'
 head_joint_id = robot.index('HeadRoll')
 M = robot.position(robot.q0,head_joint_id)
 ----
-The placement of every joint is computed using +robot.position+. This function returns an object M
+The placement of a joint is computed using +robot.position+. This function returns an object M
 of class se3.SE3. The two main fields are M.translation (3x1 vector) and M.rotation (3x3 orthogonal matrix)
 . The corresponding homogeneous matrix is given by M.homogeneous. This matrix must be converted into a
 configuration vector of dimension 7 (x,y,z + a quaternion). You can perform it  with:
 
 [source,python]
 ----
-robot.se3ToConfig(M)
+robot.se3ToXYZQUAT(M)
 ----
 
-*Question:*  For each body in the gepetto-viewer, retrieve the associated joint then its placement
+*Question:*  For each body in the gepetto-viewer, retrieve the associated joint (in Pinocchio Model), then its placement
 and display the robot Romeo in the viewer.
 
-As all of the joints do not have a body representation (for exemple, HeadPitch), and that it is pretty heavy
-to compute and update the placement of each body by hand, a function has been implemented in the romeowrapper.
-
-[source,python]
-----
-robot.display(robot.q0)
-----
-
-This function compute the placement of each joints that have a body attached to them and
+It can be a little bit hard to display each part separately, playing with the different kinematic trees.
+Moreover, all of the joints do not have a body representation (for exemple, HeadPitch) but each body is associated to a joint !
+To facilitate things, a function has been impemented in the RobotWrapper that computes and updates the placement of each body.
+This function computes the placement of each joints that have a body attached to them and
 update the body corresponding in the viewer (communicating the new position, orientation and refreshing the
-window). To do so, we bind the Pinocchio robot to the one in the gepetto viewer by initializint the
+window). To do so, we bind the Pinocchio robot to the one in the gepetto viewer by initializing the
 connexion. The argument needed is the root node of the romeo tree in gepetto-viewer.
+
 [source,python]
 ----
 robot.initDisplay("world/romeo/")
+robot.display(robot.q0)
 ----
 
+Tip: Instead of creating by hand a Corbaserver Client, a new window for displaying etc, we have binded all this stuff in the RobotWrapper.
+You'll just have to do:
+
+[source,python]
+----
+from pinocchio.romeo_wrapper import RomeoWrapper
+robot = RomeoWrapper('/path/to/models/romeo.urdf')
+robot.initDisplay("world/romeo",True)
+robot.display(robot.q0)
+----
+and let the magic happens.
 
 Moving the robot joints
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -355,6 +366,9 @@ Tutorial 2: Integration in a Lie Group
 
 Integration in SE(3)
 ~~~~~~~~~~~~~~~~~~~~
+
+*Question:* In the following, you will need a function +updateJointconfiguration+. The skeleton of this method is already in RobotWrapper.
+Fill it in a way that it can display in the viewer only the joint given as argument.
 
 To properly integrate, it is necessary to rely on the exponential map of SE(3),
 that will produce a proper homogeneous matrix by integration of a constant
