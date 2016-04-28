@@ -42,6 +42,8 @@ after_success:
   #- export PYTHONPATH=$install_dir/lib/python2.7/site-packages
   #- coveralls-lcov -v -n $build_dir/coverage.info > coverage.json
   - export PYTHONPATH=$PYHTONPATH:/tmp/_ci/install/lib/python2.7/site-packages:/usr/lib/python2.7/dist-packages
-  - coveralls-lcov -v -n /tmp/_ci/build/coverage.info > coverage.json
+  - cd /tmp/_ci/build/include/pinocchio
+  - coveralls-lcov -v -n coverage.info > coverage.json
+  - cd -
   - coverage2 run ./python/tests.py
-  - coveralls --merge=coverage.json
+  - coveralls --merge=/tmp/_ci/build/include/pinocchio/coverage.json
