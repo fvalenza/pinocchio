@@ -37,6 +37,8 @@ namespace se3
   ///
   /// \return The joint space inertia matrix with only the upper triangular part computed.
   ///
+  /// \ingroup Module_Algorithms
+  ///
   inline const Eigen::MatrixXd &
   crba(const Model & model,
        Data & data,
@@ -57,6 +59,8 @@ namespace se3
   /// \param[in] v The joint configuration vector (dim model.nv).
   ///
   /// \return The joint space inertia matrix with only the upper triangular part computed.
+  ///
+  /// \ingroup Module_Algorithms
   ///
   inline const Data::Matrix6x &
   ccrba(const Model & model,

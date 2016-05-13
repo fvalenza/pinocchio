@@ -167,6 +167,10 @@ namespace se3
   template <int _NQ, int _NV> struct JointModelDense;
   template <int _NQ, int _NV> struct JointDense;
 
+  /** CRTP Base interface of the Joint Data (storing nonconstant joint buffers).
+   *
+   * \ingroup Module_JointInterface
+   */
   template<typename _JointData>
   struct JointDataBase
   {
@@ -228,6 +232,10 @@ namespace se3
     };
   };
 
+  /** CRTP Base interface of the joint model (containing the constant value of the joint).
+   *
+   * \ingroup Module_JointInterface
+   */
   template<typename _JointModel>
   struct JointModelBase
   {

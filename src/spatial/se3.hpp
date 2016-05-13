@@ -45,6 +45,8 @@ namespace se3
    * The rigid displacement is stored as a rotation matrix and translation vector by:
    * aMb (x) =  aRb*x + aAB
    * where aAB is the vector from origin A to origin B expressed in coordinates A.
+   *
+   * \ingroup Module_SpatialAlgebraInterface
    */
   template< class Derived>
   class SE3Base
@@ -150,6 +152,10 @@ namespace se3
     };
   }; // traits SE3Tpl
 
+  /** Rigid displacement (R,p) with R a rotation matrix and p a 3D vector.
+   *
+   * \ingroup Module_SpatialAlgebra
+   */
   template<typename _Scalar, int _Options>
   class SE3Tpl : public SE3Base< SE3Tpl< _Scalar, _Options > >
   {

@@ -20,6 +20,7 @@
 
 #include "pinocchio/multibody/model.hpp"
   
+/// SE3 namespace
 namespace se3
 {
   ///
@@ -32,7 +33,7 @@ namespace se3
   /// \param[in] a The joint acceleration vector (dim model.nv).
   ///
   /// \return The desired joint torques stored in data.tau.
-  ///
+  /// \ingroup Module_Algorithms
   inline const Eigen::VectorXd &
   rnea(const Model & model, Data & data,
        const Eigen::VectorXd & q,
